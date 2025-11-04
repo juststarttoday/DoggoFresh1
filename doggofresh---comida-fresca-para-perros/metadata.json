@@ -1,0 +1,7 @@
+{
+  "name": "DoggoFresh - Comida Fresca para Perros",
+  "description": "Una aplicación MVP para probar un modelo de suscripción de comida fresca y personalizada para perros en Quito, Ecuador. Incluye un cuestionario para generar planes de comidas, un chatbot de IA, y otras herramientas impulsadas por Gemini.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
