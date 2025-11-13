@@ -1,12 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { HeartIcon } from './icons/HeartIcon';
-import type { Page } from '../App';
 
-interface FooterProps {
-  setCurrentPage: (page: Page) => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ setCurrentPage }) => {
+export const Footer: React.FC = () => {
   return (
     <footer className="bg-brand-brown text-white mt-auto">
       <div className="container mx-auto py-6 px-4 text-center">
@@ -18,13 +14,12 @@ export const Footer: React.FC<FooterProps> = ({ setCurrentPage }) => {
           <p>
             &copy; {new Date().getFullYear()} DoggoFresh. Todos los derechos reservados. Hecho con ❤️ en Quito.
           </p>
-          <a 
-            href="#" 
-            onClick={(e) => { e.preventDefault(); setCurrentPage('privacy'); }}
+          <Link 
+            to="/privacy"
             className="mt-2 inline-block hover:text-white underline"
           >
             Política de Privacidad
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

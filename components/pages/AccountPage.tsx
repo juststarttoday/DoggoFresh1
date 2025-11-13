@@ -1,13 +1,8 @@
-
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
-import type { Page } from '../../App';
 
-interface AccountPageProps {
-  setCurrentPage: (page: Page) => void;
-}
-
-export const AccountPage: React.FC<AccountPageProps> = ({ setCurrentPage }) => {
+export const AccountPage: React.FC = () => {
   const { user } = useContext(AuthContext);
 
   if (!user) {
@@ -15,10 +10,10 @@ export const AccountPage: React.FC<AccountPageProps> = ({ setCurrentPage }) => {
   }
 
   const menuItems = [
-    { title: 'Mis Suscripciones', description: 'Ve y gestiona tus planes de comida activos.', page: 'subscriptions' as Page },
-    { title: 'Mis Mascotas', description: 'Actualiza los perfiles y necesidades de tus perros.', page: 'pets' as Page },
-    { title: 'Mis Datos', description: 'Actualiza tu información de contacto y direcciones.', page: 'profile' as Page },
-    { title: 'Métodos de Pago', description: 'Gestiona tus tarjetas de crédito de forma segura.', page: 'billing' as Page },
+    { title: 'Mis Suscripciones', description: 'Ve y gestiona tus planes de comida activos.', path: '/account/subscriptions' },
+    { title: 'Mis Mascotas', description: 'Actualiza los perfiles y necesidades de tus perros.', path: '/account/pets' },
+    { title: 'Mis Datos', description: 'Actualiza tu información de contacto y direcciones.', path: '/account/profile' },
+    { title: 'Métodos de Pago', description: 'Gestiona tus tarjetas de crédito de forma segura.', path: '/account/billing' },
   ];
 
   return (
@@ -33,14 +28,14 @@ export const AccountPage: React.FC<AccountPageProps> = ({ setCurrentPage }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {menuItems.map(item => (
-            <button
-              key={item.page}
-              onClick={() => setCurrentPage(item.page)}
-              className="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-left hover:shadow-xl hover:border-brand-green transition-all duration-300 transform hover:-translate-y-1"
+            <Link
+              key={item.path}
+              to={item.path}
+              className="bg-white p-6 rounded-lg shadow-md border border-gray-200 text-left hover:shadow-xl hover:border-brand-green transition-all duration-300 transform hover:-translate-y-1 block"
             >
               <h2 className="text-2xl font-serif text-brand-green mb-4">{item.title}</h2>
               <p className="text-gray-600">{item.description}</p>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

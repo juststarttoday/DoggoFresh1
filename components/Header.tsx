@@ -1,63 +1,69 @@
 import React, { useContext, useState, useEffect } from 'react';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { HeartIcon } from './icons/HeartIcon';
-import type { Page } from '../App';
 import { AuthContext } from '../contexts/AuthContext';
 import { MenuIcon } from './icons/MenuIcon';
 import { CloseIcon } from './icons/CloseIcon';
 
-interface HeaderProps {
-    currentPage: Page;
-    setCurrentPage: (page: Page) => void;
-}
-
-const navLinks: { page: Page, label: string }[] = [
-    { page: 'home', label: 'Inicio' },
-    { page: 'about', label: 'Quiénes Somos' },
-    { page: 'whatwedo', label: 'Qué Hacemos' },
-    { page: 'contact', label: 'Contacto' },
+const navLinks: { path: string, label: string }[] = [
+    { path: '/', label: 'Inicio' },
+    { path: '/about', label: 'Quiénes Somos' },
+    { path: '/whatwedo', label: 'Qué Hacemos' },
+    { path: '/contact', label: 'Contacto' },
 ];
 
-export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) => {
+const activeLinkStyle = { color: '#3C5B52' };
+
+export const Header: React.FC = () => {
   const { user, logout } = useContext(AuthContext);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Close mobile menu on page change
     setIsMobileMenuOpen(false);
-  }, [currentPage]);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await logout();
-    setCurrentPage('home');
+    navigate('/');
   };
+  
+  const NavLinksComponent: React.FC<{isMobile?: boolean}> = ({ isMobile = false }) => (
+    <>
+     {navLinks.map(link => (
+      <NavLink
+        key={link.path}
+        to={link.path}
+        style={({ isActive }) => isActive ? activeLinkStyle : {}}
+        className={isMobile ? 'text-lg font-medium tracking-wider text-brand-brown' : 'text-base font-medium tracking-wider text-brand-brown hover:text-brand-green transition-colors'}
+      >
+        {link.label}
+      </NavLink>
+    ))}
+    </>
+  );
+
 
   const MobileNav = () => (
     <div className="absolute top-full left-0 w-full bg-brand-cream shadow-lg md:hidden">
       <nav className="flex flex-col p-4 space-y-4">
-        {navLinks.map(link => (
-          <a
-            key={link.page}
-            href="#"
-            onClick={(e) => { e.preventDefault(); setCurrentPage(link.page); }}
-            className={`text-lg font-medium tracking-wider ${currentPage === link.page ? 'text-brand-green' : 'text-brand-brown'}`}
-          >
-            {link.label}
-          </a>
-        ))}
+        <NavLinksComponent isMobile />
         <hr className="border-gray-200" />
         {user ? (
           <>
-            <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('account'); }} className="text-lg font-medium tracking-wider text-brand-brown">
+            <Link to="/account" className="text-lg font-medium tracking-wider text-brand-brown">
               Mi Cuenta
-            </a>
+            </Link>
             <button onClick={handleLogout} className="text-lg font-medium tracking-wider text-brand-brown text-left">
               Cerrar Sesión
             </button>
           </>
         ) : (
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('login'); }} className="text-lg font-medium tracking-wider text-brand-brown">
+          <Link to="/login" className="text-lg font-medium tracking-wider text-brand-brown">
             Iniciar Sesión
-          </a>
+          </Link>
         )}
       </nav>
     </div>
@@ -67,31 +73,22 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) =
     <header className="bg-brand-cream sticky top-0 z-30 border-b border-gray-200">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <a href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('home');}} className="flex items-center space-x-2 text-3xl font-bold text-brand-brown">
+          <Link to="/" className="flex items-center space-x-2 text-3xl font-bold text-brand-brown">
             <HeartIcon className="h-8 w-8 text-brand-green" />
             <span className="font-serif">DoggoFresh</span>
-          </a>
+          </Link>
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            {navLinks.map(link => (
-              <a
-                key={link.page}
-                href="#"
-                onClick={(e) => { e.preventDefault(); setCurrentPage(link.page); }}
-                className={`text-base font-medium tracking-wider ${currentPage === link.page ? 'text-brand-green' : 'text-brand-brown hover:text-brand-green transition-colors'}`}
-              >
-                {link.label}
-              </a>
-            ))}
+            <NavLinksComponent />
             {user ? (
               <>
-                <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setCurrentPage('account'); }}
-                    className={`text-base font-medium tracking-wider ${currentPage === 'account' ? 'text-brand-green' : 'text-brand-brown hover:text-brand-green transition-colors'}`}
+                <NavLink
+                    to="/account"
+                    style={({ isActive }) => isActive ? activeLinkStyle : {}}
+                    className='text-base font-medium tracking-wider text-brand-brown hover:text-brand-green transition-colors'
                   >
                     Mi Cuenta
-                </a>
+                </NavLink>
                 <button
                     onClick={handleLogout}
                     className="text-base font-medium tracking-wider text-brand-brown hover:text-brand-green transition-colors"
@@ -100,13 +97,12 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage }) =
                 </button>
               </>
             ) : (
-              <a
-                href="#"
-                onClick={(e) => { e.preventDefault(); setCurrentPage('login'); }}
+              <Link
+                to="/login"
                 className={`bg-brand-green text-white text-base font-medium tracking-wider px-5 py-2 rounded-md hover:bg-opacity-90 transition-colors`}
               >
                 Iniciar Sesión
-              </a>
+              </Link>
             )}
           </nav>
           {/* Mobile Menu Button */}

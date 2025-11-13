@@ -1,35 +1,39 @@
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import { GoogleIcon } from '../icons/GoogleIcon';
-import type { Page } from '../../App';
 
-interface LoginPageProps {
-    setCurrentPage: (page: Page) => void;
-}
+export const LoginPage: React.FC = () => {
+    const { login, emailLogin, signup, user } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/account";
 
-export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
-    const { login, emailLogin, signup } = useContext(AuthContext);
     const [isLoginView, setIsLoginView] = useState(true);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (user) {
+            navigate(from, { replace: true });
+        }
+    }, [user, navigate, from]);
     
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         setError('');
         try {
             await login();
-            setCurrentPage('account');
         } catch (err) {
             if (err instanceof Error && (err as any).code === 'auth/api-key-not-valid') {
                 setError('La configuración de Firebase no es válida. Revisa tus credenciales en el archivo services/firebase.ts.');
             } else {
                 setError(err instanceof Error ? err.message : 'Ocurrió un error con el inicio de sesión de Google.');
             }
-        } finally {
             setIsLoading(false);
         }
     };
@@ -44,19 +48,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
             } else {
                 await signup(name, email, password);
             }
-            setCurrentPage('account');
         } catch (err) {
             if (err instanceof Error) {
-                // FIX: Cast error to 'any' to access the 'code' property from Firebase errors.
                  switch ((err as any).code) {
-                    case 'auth/api-key-not-valid':
-                        setError('La configuración de Firebase no es válida. Revisa tus credenciales en el archivo services/firebase.ts.');
-                        break;
+                    case 'auth/invalid-credential':
                     case 'auth/wrong-password':
-                        setError('Correo electrónico o contraseña incorrecta. Intenta de nuevo por favor.');
-                        break;
                     case 'auth/user-not-found':
                         setError('Correo electrónico o contraseña incorrecta. Intenta de nuevo por favor.');
+                        break;
+                    case 'auth/api-key-not-valid':
+                        setError('La configuración de Firebase no es válida. Revisa tus credenciales en el archivo services/firebase.ts.');
                         break;
                     case 'auth/email-already-in-use':
                         setError('Este correo ya está registrado. Intenta iniciar sesión.');
@@ -65,12 +66,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ setCurrentPage }) => {
                          setError('La contraseña debe tener al menos 6 caracteres.');
                          break;
                     default:
-                        setError('El correo electrónico o la clave es incorrecta. Intenta de nuevo por favor.');
+                        setError('Ocurrió un error. Revisa tus datos e intenta de nuevo.');
                 }
             } else {
                  setError('Ocurrió un error inesperado.');
             }
-        } finally {
             setIsLoading(false);
         }
     };

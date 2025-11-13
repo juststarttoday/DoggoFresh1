@@ -1,17 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import type { Page } from '../../App';
+import { Link } from 'react-router-dom';
 import type { Subscription } from '../../types';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getSubscriptions, updateSubscription } from '../../services/firestoreService';
 
-interface SubscriptionsPageProps {
-  setCurrentPage: (page: Page) => void;
-}
-
 const PRICE_PER_MEAL = 4.285; 
 const WEEKS_IN_MONTH = 4.33;
 
-export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({ setCurrentPage }) => {
+export const SubscriptionsPage: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -194,12 +190,12 @@ export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({ setCurrent
             </div>
         )}
 
-        <button 
-          onClick={() => setCurrentPage('account')}
-          className="mt-12 bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
+        <Link 
+          to="/account"
+          className="mt-12 inline-block bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
         >
           Volver al Panel
-        </button>
+        </Link>
       </div>
     </div>
   );

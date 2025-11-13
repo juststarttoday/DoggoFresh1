@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import type { Page } from '../../App';
+import { Link } from 'react-router-dom';
 import type { Pet } from '../../types';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getPets, addPet, updatePet, deletePet } from '../../services/firestoreService';
 
-interface PetsPageProps {
-  setCurrentPage: (page: Page) => void;
-}
-
-export const PetsPage: React.FC<PetsPageProps> = ({ setCurrentPage }) => {
+export const PetsPage: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [pets, setPets] = useState<Pet[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +71,9 @@ export const PetsPage: React.FC<PetsPageProps> = ({ setCurrentPage }) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!petFormData) return;
-    setPetFormData({ ...petFormData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const parsedValue = name === 'age' || name === 'weight' ? parseInt(value, 10) || 0 : value;
+    setPetFormData({ ...petFormData, [name]: parsedValue });
   };
 
   const renderForm = () => (
@@ -154,12 +152,12 @@ export const PetsPage: React.FC<PetsPageProps> = ({ setCurrentPage }) => {
             </div>
         )}
 
-        <button 
-          onClick={() => setCurrentPage('account')}
-          className="mt-12 bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
+        <Link
+          to="/account"
+          className="mt-12 inline-block bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
         >
           Volver al Panel
-        </button>
+        </Link>
       </div>
     </div>
   );

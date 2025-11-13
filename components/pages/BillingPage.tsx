@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import type { Page } from '../../App';
+import { Link } from 'react-router-dom';
 import type { PaymentMethod } from '../../types';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getPaymentMethods, addPaymentMethod, updatePaymentMethod, deletePaymentMethod } from '../../services/firestoreService';
 
-
-interface BillingPageProps {
-  setCurrentPage: (page: Page) => void;
-}
-
-export const BillingPage: React.FC<BillingPageProps> = ({ setCurrentPage }) => {
+export const BillingPage: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -147,12 +142,12 @@ export const BillingPage: React.FC<BillingPageProps> = ({ setCurrentPage }) => {
             </div>
         )}
 
-        <button 
-          onClick={() => setCurrentPage('account')}
-          className="mt-12 bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
+        <Link
+          to="/account"
+          className="mt-12 inline-block bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
         >
           Volver al Panel
-        </button>
+        </Link>
       </div>
     </div>
   );

@@ -1,19 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import type { Page } from '../../App';
+import { Link } from 'react-router-dom';
 import type { Address } from '../../types';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getUserProfile, updateUserProfile } from '../../services/firestoreService';
-
-interface ProfilePageProps {
-  setCurrentPage: (page: Page) => void;
-}
 
 const defaultAddress: Address = {
   street: '', city: '', details: '',
   latitude: -0.1762, longitude: -78.4844, // Default to Quito center
 };
 
-export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
+export const ProfilePage: React.FC = () => {
   const { user } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,11 +80,13 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
   const handleCancel = async () => {
     setIsEditing(false);
     // Refetch data to discard changes
-    const profile = await getUserProfile(user.id);
-    if (profile) {
-      setName(profile.name || user.name);
-      setEmail(profile.email || user.email);
-      setAddress(profile.address || defaultAddress);
+    if (user) {
+        const profile = await getUserProfile(user.id);
+        if (profile) {
+        setName(profile.name || user.name);
+        setEmail(profile.email || user.email);
+        setAddress(profile.address || defaultAddress);
+        }
     }
   }
 
@@ -199,12 +197,12 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ setCurrentPage }) => {
             )}
         </div>
 
-        <button 
-          onClick={() => setCurrentPage('account')}
-          className="mt-12 bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
+        <Link
+          to="/account"
+          className="mt-12 inline-block bg-gray-200 text-brand-brown font-semibold uppercase tracking-widest py-3 px-8 rounded-md text-sm transition duration-300 hover:bg-gray-300"
         >
           Volver al Panel
-        </button>
+        </Link>
       </div>
     </div>
   );
